@@ -2,7 +2,16 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import MorphingIcon from "./morphing-icon";
+interface ProjectImage {
+  src: string;
+  aspect: string;
+  id: number;
+}
 
+interface ImageCardProps {
+  img: ProjectImage;
+  activeIndex: number;
+}
 export default function ImageGrid({ activeIndex }: { activeIndex: number }) {
   const images = [
     { src: "/1.jpg", aspect: "aspect-[2/3]", id: 0 },
@@ -39,30 +48,32 @@ export default function ImageGrid({ activeIndex }: { activeIndex: number }) {
   );
 }
 
-function ImageCard({ img, activeIndex }: { img: any; activeIndex: number }) {
+function ImageCard({ img, activeIndex }: ImageCardProps) {
   const isRevealed = activeIndex >= img.id;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{
-        // Now it is 0 until isRevealed is true
         opacity: isRevealed ? 1 : 0,
         y: isRevealed ? 0 : 10,
         scale: isRevealed ? 1 : 0.95,
       }}
       transition={{
         duration: 0.4,
-        ease: "easeOut", // High-end "Expo" out ease
+        ease: "easeOut",
       }}
-      className={`relative overflow-hidden rounded-xl shadow-xl ${img.aspect}`}
+      // We use a template literal and ensure aspect is treated as a string
+      className={`relative overflow-hidden rounded-xl shadow-xl ${img.aspect ?? ""}`}
     >
       <Image
         src={img.src}
         alt="Project detail"
         fill
+        // priority helps with Largest Contentful Paint for the first images
+        priority={img.id <= 1}
         className="object-cover"
-        sizes="(max-width: 768px) 30vw, 15vw"
+        sizes="(max-width: 768px) 33vw, 20vw"
       />
     </motion.div>
   );

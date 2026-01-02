@@ -17,7 +17,13 @@ export default async function RootLayout({
   const { locale } = await params;
 
   // 1. Validate locale
-  if (!routing.locales.includes(locale as any)) {
+  // 1. Define a type for your supported locales based on your routing config
+  type Locale = (typeof routing.locales)[number];
+
+  // 2. Use a Type Guard to check the locale safely
+  const isValidLocale = routing.locales.includes(locale as Locale);
+
+  if (!isValidLocale) {
     notFound();
   }
 
