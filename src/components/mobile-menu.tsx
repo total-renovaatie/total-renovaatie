@@ -28,7 +28,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
 
   const menuVariants = {
     closed: {
-      x: "100%",
+      x: 100,
       transition: { type: "spring", stiffness: 300, damping: 30 },
     },
     open: {
