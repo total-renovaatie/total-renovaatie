@@ -1,6 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   motion,
   AnimatePresence,
@@ -30,7 +30,7 @@ export default function ServicesSection() {
   const t = useTranslations("Services");
   const [activeTab, setActiveTab] = useState("structural");
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mouse Tracking Logic
@@ -43,10 +43,18 @@ export default function ServicesSection() {
   const springY = useSpring(mouseY, smoothConfig);
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (isMobile) return;
     // clientX/Y are relative to the viewport, which works perfectly with position: fixed
     mouseX.set(e.clientX);
     mouseY.set(e.clientY);
   };
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Scroll Tracking Logic
   const { scrollYProgress } = useScroll({
@@ -55,16 +63,21 @@ export default function ServicesSection() {
   });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (isMobile) return;
     const index = Math.floor(latest * categories.length);
     const safeIndex = Math.min(index, categories.length - 1);
     setActiveTab(categories[safeIndex]);
   });
 
   return (
-    <div id="services" ref={containerRef} className="relative h-[400vh]">
+    <div
+      id="services"
+      ref={containerRef}
+      className={`relative ${isMobile ? "h-auto" : "min-h-[400vh]"} px-6 py-24 md:px-12`}
+    >
       {/* 1. FLOATING IMAGE (Fixed to Viewport) */}
       <AnimatePresence>
-        {hoveredItem && (
+        {!isMobile && hoveredItem && (
           <motion.div
             key="hover-image"
             style={{
@@ -98,25 +111,30 @@ export default function ServicesSection() {
       <section
         id="services"
         onMouseMove={handleMouseMove} // Captured on the sticky section
-        className="sticky top-0 flex flex-col justify-center overflow-hidden bg-[#F5F2E8] px-6"
+        className={`${
+          isMobile
+            ? "relative py-12"
+            : "sticky top-0 flex min-h-screen flex-col justify-between py-12" // min-h instead of h
+        } overflow-hidden`}
       >
         {/* HEADER */}
-        <div className="mb-12 max-w-4xl md:ml-24 lg:ml-48">
-          <h2 className="mb-4 text-2xl font-semibold md:text-3xl lg:text-4xl">
+        <div className="mb-12 max-w-4xl">
+          <h2 className="text-5xl leading-[1.1] font-bold tracking-tight md:text-6xl">
             {t("title")}
           </h2>
           <p className="text-muted-foreground max-w-xl">{t("description")}</p>
         </div>
 
         {/* ACTIVE CONTENT */}
-        <div className="flex flex-col items-center text-center">
+        <div className="flex min-h-125 flex-col items-center text-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
+              layout
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.4, layout: { duration: 0.3 } }}
               className="w-full max-w-5xl"
             >
               <h3 className="text-primary mb-6 font-mono text-3xl underline underline-offset-8">
@@ -134,13 +152,12 @@ export default function ServicesSection() {
                     return (
                       <div
                         key={item}
-                        onMouseEnter={() => setHoveredItem(item)}
-                        onMouseLeave={() => setHoveredItem(null)}
-                        className={`hover:text-primary group cursor-pointer border-b border-black/10 pb-4 text-4xl font-medium tracking-tighter transition-colors ${
-                          isLeft ? "text-left" : "text-left md:text-right"
-                        }`}
+                        // Disable hover events on mobile to prevent "sticky" hover states
+                        onMouseEnter={() => !isMobile && setHoveredItem(item)}
+                        onMouseLeave={() => !isMobile && setHoveredItem(null)}
+                        className={`border-b border-black/10 pb-4 text-2xl font-medium tracking-tighter transition-colors active:bg-black/5 md:text-4xl ${isLeft ? "text-left" : "text-left md:text-right"} `}
                       >
-                        <span className="inline-block transition-transform duration-300 group-hover:translate-x-2">
+                        <span className="inline-block transition-transform duration-300 md:group-hover:translate-x-2">
                           {item}
                         </span>
                       </div>
@@ -153,7 +170,7 @@ export default function ServicesSection() {
         </div>
 
         {/* 2. PILL SHAPED DOCK (The "Thing at the bottom") */}
-        <div className="mx-auto mt-12 flex w-fit items-center justify-center gap-2 rounded-full bg-[#E5E4E0] p-1.5 shadow-inner">
+        <div className="mx-auto flex w-fit items-center justify-center gap-2 rounded-full bg-[#E5E4E0] p-1.5 shadow-inner">
           {categories.map((cat) => {
             const IconComponent = ICON_MAP[cat];
             const isActive = activeTab === cat;
@@ -162,12 +179,17 @@ export default function ServicesSection() {
               <button
                 key={cat}
                 onClick={() => {
-                  const scrollPos =
-                    categories.indexOf(cat) * window.innerHeight;
-                  window.scrollTo({
-                    top: containerRef.current!.offsetTop + scrollPos,
-                    behavior: "smooth",
-                  });
+                  if (isMobile) {
+                    setActiveTab(cat); // Just change the tab instantly on mobile
+                  } else {
+                    // Keep your existing desktop scroll logic
+                    const scrollPos =
+                      categories.indexOf(cat) * window.innerHeight;
+                    window.scrollTo({
+                      top: containerRef.current!.offsetTop + scrollPos,
+                      behavior: "smooth",
+                    });
+                  }
                 }}
                 className="relative flex items-center justify-center rounded-full p-3 transition-all outline-none"
               >

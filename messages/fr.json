@@ -78,5 +78,27 @@
       "energy": "Habitat Économe",
       "guarantee": "Accords Clairs"
     }
+  },
+  "Work": {
+    "title": "Notre Travail",
+    "description": "Lorem ipsum dolor sit amet consectetur. Nunc ut condimentum sit libero enim. Diam facilisis.",
+    "viewAll": "Voir Tout",
+    "categories": {
+      "structural": "Structurel",
+      "energy": "Énergie",
+      "interior": "Intérieur",
+      "security": "Sécurité"
+    }
+  },
+  "Contact": {
+    "title": "Contactez-nous pour plus d'informations",
+    "email": "Nous contacter par e-mail",
+    "whatsapp": "WhatsApp",
+    "legal": {
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation",
+      "cookies": "Politique relative aux cookies",
+      "rights": "Tous droits réservés."
+    }
   }
 }

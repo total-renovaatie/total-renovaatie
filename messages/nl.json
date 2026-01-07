@@ -74,5 +74,27 @@
       "energy": "Energiezuinig Wonen",
       "guarantee": "Duidelijke Afspraken"
     }
+  },
+  "Work": {
+    "title": "Ons Werk",
+    "description": "Lorem ipsum dolor sit amet consectetur. Nunc ut condimentum sit libero enim. Diam facilisis.",
+    "viewAll": "Bekijk Alles",
+    "categories": {
+      "structural": "Structureel",
+      "energy": "Energie",
+      "interior": "Interieur",
+      "security": "Beveiliging"
+    }
+  },
+  "Contact": {
+    "title": "Neem contact met ons op voor meer informatie",
+    "email": "E-mail ons",
+    "whatsapp": "WhatsApp",
+    "legal": {
+      "privacy": "Privacybeleid",
+      "terms": "Algemene voorwaarden",
+      "cookies": "Cookiebeleid",
+      "rights": "Alle rechten voorbehouden."
+    }
   }
 }

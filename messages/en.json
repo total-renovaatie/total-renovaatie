@@ -67,5 +67,28 @@
       "energy": "Energy-Efficient Living",
       "guarantee": "Clear Agreements"
     }
+  },
+  "Work": {
+    "title": "Our Work",
+    "description": "Lorem ipsum dolor sit amet consectetur. Nunc ut condimentum sit libero enim. Diam facilisis.",
+    "viewAll": "View All",
+    "categories": {
+      "structural": "Structural",
+      "energy": "Energy",
+      "interior": "Interior",
+      "security": "Security"
+    }
+  },
+
+  "Contact": {
+    "title": "Contact Us For More Information",
+    "email": "Email Us",
+    "whatsapp": "WhatsApp",
+    "legal": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "rights": "All rights reserved."
+    }
   }
 }
