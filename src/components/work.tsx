@@ -45,7 +45,7 @@ export default function PhotoGallery() {
           {/* VIEW ALL: Now opens the lightbox for the current category */}
           <button
             onClick={() => setIndex(0)}
-            className="rounded-full border border-slate-300 px-8 py-2 text-sm font-medium transition-colors hover:bg-black hover:text-white"
+            className="order-4 rounded-full border border-slate-300 px-8 py-2 text-sm font-medium transition-colors hover:bg-black hover:text-white md:order-1"
           >
             {t("viewAll")}
           </button>

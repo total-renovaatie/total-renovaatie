@@ -24,9 +24,9 @@ export default function ImageGrid({ activeIndex }: { activeIndex: number }) {
 
   return (
     <div className="mx-auto mt-16 w-full max-w-7xl px-4">
-      <div className="flex flex-col items-center justify-center gap-4 md:flex-row lg:gap-8">
+      <div className="flex flex-col items-center justify-center gap-4 lg:flex-row lg:gap-8">
         {/* LEFT GROUP */}
-        <div className="grid w-full grid-cols-3 items-center gap-2 md:w-[45%] md:gap-4">
+        <div className="grid w-full grid-cols-3 items-center gap-2 md:w-[70%] md:gap-4 lg:w-[45%]">
           {images.slice(0, 3).map((img) => (
             <ImageCard key={img.id} img={img} activeIndex={activeIndex} />
           ))}
@@ -38,7 +38,7 @@ export default function ImageGrid({ activeIndex }: { activeIndex: number }) {
         </div>
 
         {/* RIGHT GROUP */}
-        <div className="grid w-full grid-cols-3 items-center gap-2 md:w-[45%] md:gap-4">
+        <div className="grid w-full grid-cols-3 items-center gap-2 md:w-[70%] md:gap-4 lg:w-[45%]">
           {images.slice(3, 6).map((img) => (
             <ImageCard key={img.id} img={img} activeIndex={activeIndex} />
           ))}

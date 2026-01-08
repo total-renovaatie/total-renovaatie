@@ -100,5 +100,9 @@
       "cookies": "Politique relative aux cookies",
       "rights": "Tous droits réservés."
     }
+  },
+  "Legal": {
+    "title": "Informations Légales",
+    "content": "Ce site web est destiné à fournir des informations sur nos services. Nous n'utilisons pas de cookies de suivi et ne collectons pas de données personnelles automatiquement. Lorsque vous nous contactez via WhatsApp ou e-mail, nous utilisons uniquement les informations fournies pour répondre à votre demande. Vos données ne sont pas partagées avec des tiers. Toutes les images et le contenu sont la propriété intellectuelle de notre entreprise et ne peuvent être reproduits sans autorisation."
   }
 }

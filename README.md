@@ -4,7 +4,7 @@
 ## TODO
 
 -[x] Make it deploy (vercel)
--[ ] Scaffold basic ui with mock data
+-[x] Scaffold basic ui with mock data
 -[x] Implement the two languages feature
 -[ ] Actually set up a database (vercel postgres)
 -[ ] Figure out image storage method

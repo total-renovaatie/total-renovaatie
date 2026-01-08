@@ -7,7 +7,7 @@ export default function AboutSection() {
   const t = useTranslations("AboutUs");
 
   return (
-    <section id="about" className="px-6 py-24 md:px-12">
+    <section id="about" className="px-6 py-24 md:px-12 lg:py-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
         {/* TEXT CONTENT */}
         <motion.div

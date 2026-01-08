@@ -96,5 +96,9 @@
       "cookies": "Cookiebeleid",
       "rights": "Alle rechten voorbehouden."
     }
+  },
+  "Legal": {
+    "title": "Juridische Informatie",
+    "content": "Deze website is bedoeld om informatie te verstrekken over onze diensten. Wij gebruiken geen trackingcookies en verzamelen niet automatisch persoonlijke gegevens. Wanneer u contact met ons opneemt via WhatsApp of e-mail, gebruiken wij de verstrekte informatie uitsluitend om uw aanvraag te beantwoorden. Wij delen uw gegevens niet met derden. Alle afbeeldingen en inhoud zijn het intellectuele eigendom van ons bedrijf en mogen niet zonder toestemming worden gereproduceerd."
   }
 }

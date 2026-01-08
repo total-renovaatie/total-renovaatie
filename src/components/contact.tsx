@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
+import { LegalModal } from "./legal-modal";
 
 export default function Contact() {
   const t = useTranslations("Contact");
@@ -50,28 +51,13 @@ export default function Contact() {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center justify-between gap-6 border-t border-slate-200 pt-8 md:flex-row">
             <p className="text-sm text-slate-500">
-              © {currentYear} Your Company Name. {t("legal.rights")}
+              © {currentYear} Total Renovaatie. {t("legal.rights")}
             </p>
 
             <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-600">
-              <Link
-                href="/privacy"
-                className="transition-colors hover:text-black"
-              >
-                {t("legal.privacy")}
-              </Link>
-              <Link
-                href="/terms"
-                className="transition-colors hover:text-black"
-              >
-                {t("legal.terms")}
-              </Link>
-              <Link
-                href="/cookies"
-                className="transition-colors hover:text-black"
-              >
-                {t("legal.cookies")}
-              </Link>
+              <LegalModal triggerText={t("legal.privacy")} />
+              <LegalModal triggerText={t("legal.terms")} />
+              <LegalModal triggerText={t("legal.cookies")} />
             </div>
           </div>
         </div>

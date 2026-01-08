@@ -90,5 +90,9 @@
       "cookies": "Cookie Policy",
       "rights": "All rights reserved."
     }
+  },
+  "Legal": {
+    "title": "Legal Information",
+    "content": "This website is designed to provide information about our services. We do not use tracking cookies or collect personal data automatically. When you contact us via WhatsApp or Email, we only use the information provided to respond to your inquiry. We do not share your data with third parties. All images and content are the intellectual property of our company and may not be reproduced without permission."
   }
 }
