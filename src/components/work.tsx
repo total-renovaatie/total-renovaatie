@@ -14,10 +14,17 @@ import "yet-another-react-lightbox/styles.css";
 
 import NextJsImage from "./next-image";
 import { MOCK_PROJECTS } from "~/lib/utils";
+import type { CategoryWithServices } from "~/server/db/types";
 
-const categoryKeys = ["structural", "energy", "interior", "security"];
-
-export default function PhotoGallery() {
+export default function PhotoGallery({
+  data,
+  locale,
+}: {
+  data: CategoryWithServices[];
+  locale: string;
+}) {
+  const categorySlugs = data.map((cat) => cat.slug);
+  console.log("slugs", categorySlugs);
   const t = useTranslations("Work");
   const [index, setIndex] = useState(-1);
   const [filter, setFilter] = useState("structural"); // Default to first category
@@ -52,26 +59,44 @@ export default function PhotoGallery() {
 
           {/* Category Tabs */}
           <div className="flex flex-wrap gap-3">
-            {categoryKeys.map((key) => (
-              <button
-                key={key}
-                onClick={() => setFilter(key)}
-                className={`relative rounded-full px-6 py-2 text-sm font-medium transition-all ${
-                  filter === key
-                    ? "text-white"
-                    : "border border-slate-300 text-slate-600 hover:bg-slate-50"
-                }`}
-              >
-                {filter === key && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 z-0 rounded-full bg-[#4A789C]"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-                <span className="relative z-10">{t(`categories.${key}`)}</span>
-              </button>
-            ))}
+            {/* Map over the full data objects from the DB */}
+            {data.map((category) => {
+              const key = category.slug;
+
+              // 1. Get the localized label from the DB object
+              const displayLabel =
+                locale === "fr"
+                  ? category.nameFr
+                  : locale === "nl"
+                    ? category.nameNl
+                    : category.nameEn;
+
+              return (
+                <button
+                  key={category.id} // Use the DB ID for the key
+                  onClick={() => setFilter(key)}
+                  className={`relative rounded-full px-6 py-2 text-sm font-medium transition-all ${
+                    filter === key
+                      ? "text-white"
+                      : "border border-slate-300 text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {filter === key && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 z-0 rounded-full bg-[#4A789C]"
+                      transition={{
+                        type: "spring",
+                        bounce: 0.2,
+                        duration: 0.6,
+                      }}
+                    />
+                  )}
+                  {/* 2. Show the label from the DB instead of the t() function */}
+                  <span className="relative z-10">{displayLabel}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

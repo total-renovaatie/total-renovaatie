@@ -30,14 +30,14 @@ export default function AboutSection() {
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="relative aspect-square overflow-hidden rounded-2xl bg-slate-200 shadow-2xl"
+          className="relative aspect-square overflow-hidden rounded-2xl shadow-2xl"
         >
           {/* Replace with your high-end interior or renovation photo */}
           <div className="absolute inset-0 bg-linear-to-tr from-black/20 to-transparent" />
           <Image
             width={800}
             height={800}
-            src="/images/about-renovation.jpg"
+            src="/logo.png"
             alt="Luxury Renovation"
             className="h-full w-full object-cover"
           />

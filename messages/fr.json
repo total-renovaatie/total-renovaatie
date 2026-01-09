@@ -22,52 +22,7 @@
   },
   "Services": {
     "title": "Nos Services",
-    "description": "Nous offrons une large gamme de services pour concrétiser votre vision.",
-    "categories": {
-      "structural": {
-        "label": "Structurel & Externe",
-        "description": "Solutions durables pour l'enveloppe et la structure de votre bâtiment.",
-        "items": [
-          "Traitement de l'humidité",
-          "Maçonnerie",
-          "Démolition",
-          "Isolation extérieure",
-          "Vérandas",
-          "Toiture"
-        ]
-      },
-      "interior": {
-        "label": "Design d'Intérieur",
-        "description": "Transformer vos espaces intérieurs avec expertise et design moderne.",
-        "items": [
-          "Peinture",
-          "Revêtement de sol",
-          "Éclairage",
-          "Mobilier",
-          "Carrelage"
-        ]
-      },
-      "smart": {
-        "label": "Maison Intelligente",
-        "description": "Intégration de technologies de pointe pour le confort et la sécurité.",
-        "items": [
-          "Automatisation",
-          "Systèmes de sécurité",
-          "Éclairage intelligent",
-          "Contrôle CVC"
-        ]
-      },
-      "landscaping": {
-        "label": "Aménagement Paysager",
-        "description": "Créer des environnements extérieurs en harmonie avec votre architecture.",
-        "items": [
-          "Aménagement de jardin",
-          "Pavage",
-          "Installation de piscine",
-          "Clôtures"
-        ]
-      }
-    }
+    "description": "Nous offrons une large gamme de services pour concrétiser votre vision."
   },
   "AboutUs": {
     "title": "Tout sous un même toit – Comfort Home Pro",

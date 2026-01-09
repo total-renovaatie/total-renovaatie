@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
+import type { CategoryWithServices, Service } from "~/server/db/types";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   structural: Home,
@@ -25,11 +26,27 @@ const ICON_MAP: Record<string, LucideIcon> = {
   landscaping: Hammer,
 };
 
-const categories = ["structural", "interior", "smart", "landscaping"];
+export default function ServicesSection({
+  data,
+  locale,
+}: {
+  data: CategoryWithServices[];
+  locale: string;
+}) {
+  const categorySlugs = data.map((cat) => cat.slug);
 
-export default function ServicesSection() {
+  // 2. Updated Icon Map (Fallback to Home if slug doesn't match)
+  const getIcon = (slug: string) => {
+    const map: Record<string, LucideIcon> = {
+      structural: Home,
+      finishing: LayoutDashboard,
+      technical: Boxes,
+      outdoor: Hammer,
+    };
+    return map[slug] ?? Home;
+  };
   const t = useTranslations("Services");
-  const [activeTab, setActiveTab] = useState("structural");
+  const [activeTab, setActiveTab] = useState(categorySlugs[0] ?? "structural");
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -65,10 +82,15 @@ export default function ServicesSection() {
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (isMobile) return;
-    const index = Math.floor(latest * categories.length);
-    const safeIndex = Math.min(index, categories.length - 1);
-    const nextCategory = categories[safeIndex] ?? categories[0];
-    if (nextCategory) {
+
+    // Use a slight offset (0.05) or use Math.round for a "center-based" switch
+    // instead of Math.floor which switches the moment you touch the boundary.
+    const index = Math.round(latest * (categorySlugs.length - 1));
+
+    const safeIndex = Math.max(0, Math.min(index, categorySlugs.length - 1));
+    const nextCategory = categorySlugs[safeIndex];
+
+    if (nextCategory && nextCategory !== activeTab) {
       setActiveTab(nextCategory);
     }
   });
@@ -135,62 +157,106 @@ export default function ServicesSection() {
           {/* ACTIVE CONTENT */}
           <div className="flex min-h-125 flex-col items-center text-center">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                layout
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4, layout: { duration: 0.3 } }}
-                className="w-full max-w-5xl"
-              >
-                <h3 className="text-primary mb-6 font-mono text-3xl underline underline-offset-8">
-                  {t(`categories.${activeTab}.label`)}
-                </h3>
-                <p className="mx-auto mb-16 max-w-2xl text-lg">
-                  {t(`categories.${activeTab}.description`)}
-                </p>
+              {/* 1. Find the current active category from your DB data */}
+              {(() => {
+                const currentCategory = data.find(
+                  (cat) => cat.slug === activeTab,
+                );
 
-                {/* SUB-SERVICES GRID */}
-                <div className="grid grid-cols-1 gap-x-24 gap-y-8 text-left md:grid-cols-2">
-                  {(t.raw(`categories.${activeTab}.items`) as string[]).map(
-                    (item, index) => {
-                      const isLeft = index % 2 === 0;
-                      return (
-                        <div
-                          key={item}
-                          onMouseEnter={() => !isMobile && setHoveredItem(item)}
-                          onMouseLeave={() => !isMobile && setHoveredItem(null)}
-                          className={`group relative cursor-pointer border-b border-black/10 pb-4 text-2xl font-medium tracking-tighter transition-colors md:text-4xl ${isLeft ? "text-left" : "text-left md:text-right"} /* THE ANIMATED BORDER LOGIC */ after:bg-primary after:absolute after:bottom-0 after:h-[2px] after:w-0 after:transition-all after:duration-500 after:content-[''] hover:after:w-full ${isLeft ? "after:left-0" : "after:left-0 md:after:right-0 md:after:left-auto"} `}
-                        >
-                          <span className="inline-block transition-transform duration-300 md:group-hover:translate-x-2">
-                            {item}
-                          </span>
-                        </div>
-                      );
-                    },
-                  )}
-                </div>
-              </motion.div>
+                // Fallback if data hasn't loaded or slug doesn't match
+                if (!currentCategory) return null;
+
+                // Localization helper for Category and Service
+                const getLabel = (
+                  item: CategoryWithServices | Service,
+                ): string => {
+                  if (locale === "fr") {
+                    // We use a type guard or 'in' check to see if it's a Category or Service
+                    return (
+                      ("nameFr" in item ? item.nameFr : item.titleFr) ?? ""
+                    );
+                  }
+                  if (locale === "nl") {
+                    return (
+                      ("nameNl" in item ? item.nameNl : item.titleNl) ?? ""
+                    );
+                  }
+                  // Default to English
+                  return ("nameEn" in item ? item.nameEn : item.titleEn) ?? "";
+                };
+
+                return (
+                  <motion.div
+                    key={activeTab}
+                    layout
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.4, layout: { duration: 0.3 } }}
+                    className="w-full max-w-5xl"
+                  >
+                    {/* 2. Dynamic Title from DB */}
+                    <h3 className="text-primary mb-6 font-mono text-3xl underline underline-offset-8">
+                      {getLabel(currentCategory)}
+                    </h3>
+
+                    {/* 3. Description still comes from JSON since it's "Static Marketing Copy" 
+              (Optional: You can move this to DB too if you add a description column) */}
+                    <p className="mx-auto mb-16 max-w-2xl text-lg">
+                      {t(`description`)}
+                    </p>
+
+                    {/* 4. SUB-SERVICES GRID - Now mapping through currentCategory.services */}
+                    <div className="grid grid-cols-1 gap-x-24 gap-y-8 text-left md:grid-cols-2">
+                      {currentCategory.services.map((service, index) => {
+                        const isLeft = index % 2 === 0;
+                        const displayTitle = getLabel(service);
+
+                        return (
+                          <div
+                            key={service.id}
+                            onMouseEnter={() =>
+                              !isMobile && setHoveredItem(displayTitle)
+                            }
+                            onMouseLeave={() =>
+                              !isMobile && setHoveredItem(null)
+                            }
+                            className={`group relative cursor-pointer border-b border-black/10 pb-4 text-2xl font-medium tracking-tighter transition-colors md:text-4xl ${
+                              isLeft ? "text-left" : "text-left md:text-right"
+                            } after:bg-primary after:absolute after:bottom-0 after:h-0.5 after:w-0 after:transition-all after:duration-500 after:content-[''] hover:after:w-full ${
+                              isLeft
+                                ? "after:left-0"
+                                : "after:left-0 md:after:right-0 md:after:left-auto"
+                            }`}
+                          >
+                            <span className="inline-block transition-transform duration-300 md:group-hover:translate-x-2">
+                              {displayTitle}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                );
+              })()}
             </AnimatePresence>
           </div>
 
           {/* 2. PILL SHAPED DOCK (The "Thing at the bottom") */}
           <div className="mx-auto mt-12 flex w-fit items-center justify-center gap-2 rounded-full bg-[#E5E4E0] p-1.5 shadow-inner md:mt-0">
-            {categories.map((cat) => {
-              const IconComponent = ICON_MAP[cat];
-              const isActive = activeTab === cat;
+            {data.map((category) => {
+              const IconComponent = getIcon(category.slug);
+              const isActive = activeTab === category.slug;
 
               return (
                 <button
-                  key={cat}
+                  key={category.id}
                   onClick={() => {
                     if (isMobile) {
-                      setActiveTab(cat); // Just change the tab instantly on mobile
+                      setActiveTab(category.slug);
                     } else {
-                      // Keep your existing desktop scroll logic
-                      const scrollPos =
-                        categories.indexOf(cat) * window.innerHeight;
+                      const index = categorySlugs.indexOf(category.slug);
+                      const scrollPos = index * window.innerHeight;
                       window.scrollTo({
                         top: containerRef.current!.offsetTop + scrollPos,
                         behavior: "smooth",
@@ -213,9 +279,7 @@ export default function ServicesSection() {
                   <div
                     className={`relative z-10 px-2 transition-colors duration-300 ${isActive ? "text-white" : "text-slate-500"}`}
                   >
-                    {IconComponent && (
-                      <IconComponent size={20} strokeWidth={2} />
-                    )}
+                    <IconComponent size={20} strokeWidth={2} />
                   </div>
                 </button>
               );

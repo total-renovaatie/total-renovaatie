@@ -22,47 +22,7 @@
   },
   "Services": {
     "title": "Onze Diensten",
-    "description": "Wij bieden een breed scala aan diensten om uw visie tot leven te brengen.",
-    "categories": {
-      "structural": {
-        "label": "Structureel & Extern",
-        "description": "Duurzame oplossingen voor de schil en structuur van uw gebouw.",
-        "items": [
-          "Vochtbehandeling",
-          "Metselwerk",
-          "Afbraakwerken",
-          "Gevelisolatie",
-          "Veranda's",
-          "Dakwerken"
-        ]
-      },
-      "interior": {
-        "label": "Interieurontwerp",
-        "description": "Uw binnenruimtes transformeren met vakmanschap en modern design.",
-        "items": [
-          "Schilderwerken",
-          "Vloeren",
-          "Verlichting",
-          "Meubilair",
-          "Tegelwerken"
-        ]
-      },
-      "smart": {
-        "label": "Smart Home",
-        "description": "Integratie van geavanceerde technologie voor comfort en veiligheid.",
-        "items": [
-          "Automatisering",
-          "Beveiliging",
-          "Slimme Verlichting",
-          "Klimaatbeheersing"
-        ]
-      },
-      "landscaping": {
-        "label": "Tuinaanleg",
-        "description": "Buitenomgevingen creëren die harmoniëren met uw architectuur.",
-        "items": ["Tuinontwerp", "Bestrating", "Zwembadaanleg", "Omheiningen"]
-      }
-    }
+    "description": "Wij bieden een breed scala aan diensten om uw visie tot leven te brengen."
   },
 
   "AboutUs": {

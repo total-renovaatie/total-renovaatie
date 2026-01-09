@@ -22,41 +22,7 @@
   },
   "Services": {
     "title": "Our Services",
-    "description": "Lorem ipsum dolor sit amet consectetur. Nunc ut condimentum sit libero enim. Diam facilisis.",
-    "categories": {
-      "structural": {
-        "label": "Structural & External",
-        "description": "Lorem ipsum dolor sit amet consectetur. Nunc ut condimentum sit libero enim. Diam facilisis.",
-        "items": [
-          "Humidity Treatment",
-          "Masonry",
-          "Demolition",
-          "Exterior Insulation",
-          "Verandas",
-          "Roofing"
-        ]
-      },
-      "interior": {
-        "label": "Interior Design",
-        "description": "Transforming your indoor spaces with expert craftsmanship and modern design.",
-        "items": ["Painting", "Flooring", "Lighting", "Furniture", "Tiling"]
-      },
-      "smart": {
-        "label": "Smart Home",
-        "description": "Integrating cutting-edge technology for comfort, security, and efficiency.",
-        "items": [
-          "Automation",
-          "Security Systems",
-          "Smart Lighting",
-          "HVAC Control"
-        ]
-      },
-      "landscaping": {
-        "label": "Landscaping",
-        "description": "Creating outdoor environments that harmonize with your architecture.",
-        "items": ["Garden Design", "Paving", "Pool Installation", "Fencing"]
-      }
-    }
+    "description": "Lorem ipsum dolor sit amet consectetur. Nunc ut condimentum sit libero enim. Diam facilisis."
   },
   "AboutUs": {
     "title": "Everything Under One Roof – Comfort Home Pro",
