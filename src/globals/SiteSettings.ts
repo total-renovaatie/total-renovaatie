@@ -10,8 +10,8 @@ export const SiteSettings: GlobalConfig = {
     livePreview: {
       url: ({ locale }) => {
         const localeCode = typeof locale === "object" ? locale?.code : locale;
-        // return `${process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000"}/${localeCode}`;
-        return `${"http://localhost:3000"}/${localeCode}`;
+        return `${process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000"}/${localeCode}`;
+        // return `${"http://localhost:3000"}/${localeCode}`;
       },
     },
   },

@@ -62,14 +62,9 @@ function ImageCard({
 }) {
   // This logic works now because 'id' is no longer undefined
   const isRevealed = activeIndex >= id;
+  const imageUrl = item?.image?.url;
 
-  const relativeUrl = item?.image?.url;
-
-  const src = relativeUrl
-    ? relativeUrl.startsWith("http")
-      ? relativeUrl
-      : `http://localhost:3000${relativeUrl}`
-    : null;
+  const src = imageUrl || null;
 
   return (
     <motion.div
