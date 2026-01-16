@@ -4,9 +4,15 @@ import { motion } from "framer-motion";
 import { Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { LegalModal } from "./legal-modal";
+import type { SiteSetting } from "~/payload-types";
 
-export default function Contact() {
-  const t = useTranslations("Contact");
+export default function Contact({
+  settings,
+  locale,
+}: {
+  settings: SiteSetting;
+  locale: string;
+}) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -20,7 +26,7 @@ export default function Contact() {
             viewport={{ once: true }}
             className="mb-12 max-w-3xl text-4xl font-bold tracking-tight text-white md:text-6xl"
           >
-            {t("title")}
+            {settings.contactSectionTitle}
           </motion.h2>
 
           <div className="flex flex-col items-center gap-4 sm:flex-row">
@@ -30,7 +36,7 @@ export default function Contact() {
               className="flex items-center gap-3 rounded-full bg-white px-8 py-4 font-medium text-[#43749B] transition-transform hover:scale-105 active:scale-95"
             >
               <Mail size={20} />
-              {t("email")}
+              {settings.emailButtonText}
             </Link>
 
             {/* WhatsApp Button */}
@@ -40,7 +46,7 @@ export default function Contact() {
               className="flex items-center gap-3 rounded-full bg-[#51B14E] px-8 py-4 font-medium text-white transition-transform hover:scale-105 active:scale-95"
             >
               <MessageCircle size={20} />
-              {t("whatsapp")}
+              {settings.whatsappButtonText}
             </Link>
           </div>
         </div>
@@ -51,13 +57,11 @@ export default function Contact() {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center justify-between gap-6 border-t border-slate-200 pt-8 md:flex-row">
             <p className="text-sm text-slate-500">
-              © {currentYear} Total Renovaatie. {t("legal.rights")}
+              © {currentYear} {settings.address}
             </p>
 
             <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-600">
-              <LegalModal triggerText={t("legal.privacy")} />
-              <LegalModal triggerText={t("legal.terms")} />
-              <LegalModal triggerText={t("legal.cookies")} />
+              <LegalModal triggerText={settings.address} />
             </div>
           </div>
         </div>

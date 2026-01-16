@@ -9,8 +9,9 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
     DATABASE_URL_UNPOOLED: z.string().url(),
-    UPLOADTHING_TOKEN: z.string().min(1),
+    // UPLOADTHING_TOKEN: z.string().min(1),
     PAYLOAD_SECRET: z.string().min(1),
+    BLOB_READ_WRITE_TOKEN: z.string().min(1),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -22,6 +23,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
+    NEXT_PUBLIC_SERVER_URL: z.string().url(),
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
   },
 
@@ -32,9 +34,12 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
-    UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
+    // UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     PAYLOAD_SECRET: process.env.PAYLOAD_SECRET,
     NODE_ENV: process.env.NODE_ENV,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
+    NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
+
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

@@ -19,6 +19,12 @@ const config = {
   images: {
     remotePatterns: [
       {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
+        pathname: "/api/media/**",
+      },
+      {
         protocol: "https",
         hostname: "sd6ugp3ku1.ufs.sh", // This is your UploadThing identifier
         pathname: "/f/**",

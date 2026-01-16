@@ -10,22 +10,18 @@ import {
   useSpring,
   useMotionValue,
 } from "framer-motion";
-import {
-  Boxes,
-  Hammer,
-  Home,
-  LayoutDashboard,
-  type LucideIcon,
-} from "lucide-react";
+import * as LucideIcons from "lucide-react";
 import Image from "next/image";
-import type { CategoryWithServices } from "~/server/db/types";
+import type { SiteSetting } from "~/payload-types";
 
 export default function ServicesSection({
   data,
   locale,
+  settings,
 }: {
   data: CategoryWithServices[];
   locale: string;
+  settings: SiteSetting;
 }) {
   const categorySlugs = data.map((cat) => cat.slug);
   const t = useTranslations("Services");
@@ -59,14 +55,11 @@ export default function ServicesSection({
   }, []);
 
   // 2. Icon Helper
-  const getIcon = (slug: string) => {
-    const map: Record<string, LucideIcon> = {
-      structural: Home,
-      finishing: LayoutDashboard,
-      technical: Boxes,
-      outdoor: Hammer,
-    };
-    return map[slug] ?? Home;
+  const getIcon = (iconName: string) => {
+    // Look up the icon by the string name stored in Payload
+    // Fallback to 'Home' if the name doesn't match
+    const IconComponent = LucideIcons[iconName] ?? LucideIcons.Home;
+    return IconComponent;
   };
 
   // 3. Scroll Tracking Logic for auto-switching tabs
@@ -77,8 +70,8 @@ export default function ServicesSection({
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (isMobile) return;
-    const index = Math.round(latest * (categorySlugs.length - 1));
-    const safeIndex = Math.max(0, Math.min(index, categorySlugs.length - 1));
+    const index = Math.floor(latest * data.length);
+    const safeIndex = Math.min(index, data.length - 1);
     const nextCategory = categorySlugs[safeIndex];
 
     if (nextCategory && nextCategory !== activeTab) {
@@ -90,7 +83,12 @@ export default function ServicesSection({
     <div id="services" className="overflow-visible px-6 pt-12 md:px-12 lg:pt-8">
       <div
         ref={containerRef}
-        className={`relative ${isMobile ? "h-auto" : "min-h-[400vh]"} mx-auto max-w-7xl py-24`}
+        className={`relative mx-auto max-w-7xl py-24`}
+        style={{
+          // If mobile, use auto height.
+          // If desktop, multiply number of categories by 100vh
+          minHeight: isMobile ? "auto" : `${data.length * 100}vh`,
+        }}
       >
         {/* FLOATING IMAGE (Follows Spring Values) */}
         <AnimatePresence>
@@ -99,12 +97,12 @@ export default function ServicesSection({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="pointer-events-none fixed z-[9999] h-80 w-64 overflow-hidden rounded-xl border-4 border-white shadow-2xl"
+              className="pointer-events-none fixed z-9999 h-80 w-64 overflow-hidden rounded-xl border-4 border-white shadow-2xl"
               style={{
                 left: springX,
                 top: springY,
-                x: 25, // Offset from cursor
-                y: 25,
+                x: "-50%", // Offset from cursor
+                y: "-110%",
               }}
             >
               <Image
@@ -129,10 +127,10 @@ export default function ServicesSection({
           {/* HEADER */}
           <div className="mb-12 flex max-w-4xl flex-col items-center justify-center text-center md:items-start md:justify-start md:text-left">
             <h2 className="text-5xl leading-[1.1] font-bold tracking-tight text-slate-900 md:text-6xl">
-              {t("title")}
+              {settings.servicesTitle}
             </h2>
             <p className="text-muted-foreground mt-4 max-w-xl text-lg">
-              {t("description")}
+              {settings.servicesDescription} {/* 👈 Changed */}{" "}
             </p>
           </div>
 
@@ -163,6 +161,7 @@ export default function ServicesSection({
                         const isLeft = index % 2 === 0;
 
                         // 1. IMPROVED IMAGE LOGIC
+                        // 1. CLEAN VERCEL BLOB LOGIC
                         const serviceImg = service.image;
                         let serviceImageUrl = "";
 
@@ -170,33 +169,25 @@ export default function ServicesSection({
                           typeof serviceImg === "object" &&
                           serviceImg !== null
                         ) {
-                          const media = serviceImg;
+                          const media = serviceImg; // Cast to any to access Payload Media properties
 
-                          // 1. Check for the absolute URL (The most reliable for UploadThing)
-                          if (media.url && media.url.startsWith("http")) {
+                          // In Payload 3.0 with Vercel Blob:
+                          // If the URL is absolute (https://...), use it directly.
+                          // If it's relative (/api/media/...), Next.js handles it or we use the filename.
+
+                          if (media.url) {
                             serviceImageUrl = media.url;
-                          }
-                          // 2. Check for the fileKey (If it actually matches the UT key)
-                          else if (
-                            media.fileKey &&
-                            !media.fileKey.includes(" ")
-                          ) {
-                            serviceImageUrl = `https://sd6ugp3ku1.ufs.sh/f/${media.fileKey}`;
-                          }
-                          // 3. Fallback to the standard filename construction
-                          else if (media.filename) {
-                            serviceImageUrl = `https://sd6ugp3ku1.ufs.sh/f/${media.filename}`;
+                          } else if (media.filename) {
+                            // If you are still seeing /api/media/..., this is a safe fallback
+                            serviceImageUrl = `/api/media/file/${media.filename}`;
                           }
                         }
-
-                        console.log("Final Hover URL:", serviceImageUrl);
 
                         return (
                           <div
                             key={service.id}
                             onMouseEnter={() => {
                               if (!isMobile && serviceImageUrl) {
-                                console.log("FULL MEDIA DATA:", service.image);
                                 setHoveredImage(serviceImageUrl);
                               }
                             }}
@@ -230,19 +221,25 @@ export default function ServicesSection({
           {/* PILL DOCK NAVIGATION */}
           <div className="mx-auto mt-16 flex w-fit items-center justify-center gap-2 rounded-full border border-black/5 bg-white/80 p-2 shadow-xl backdrop-blur-md">
             {data.map((category) => {
-              const IconComponent = getIcon(category.slug);
+              const IconComponent = getIcon(category.icon || "Home");
               const isActive = activeTab === category.slug;
 
               return (
                 <button
                   key={category.id}
                   onClick={() => {
-                    const index = categorySlugs.indexOf(category.slug);
-                    const scrollPos = index * window.innerHeight;
-                    window.scrollTo({
-                      top: containerRef.current!.offsetTop + scrollPos,
-                      behavior: "smooth",
-                    });
+                    if (isMobile) {
+                      // On mobile, just switch the content immediately
+                      setActiveTab(category.slug);
+                    } else {
+                      // On desktop, keep the smooth scroll logic
+                      const index = categorySlugs.indexOf(category.slug);
+                      const scrollPos = index * window.innerHeight;
+                      window.scrollTo({
+                        top: containerRef.current!.offsetTop + scrollPos,
+                        behavior: "smooth",
+                      });
+                    }
                   }}
                   className="relative flex items-center justify-center rounded-full p-4 transition-all"
                 >

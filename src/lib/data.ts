@@ -68,7 +68,7 @@ export async function getAllWorkImages(): Promise<WorkImage[]> {
 
   const { docs } = await payload.find({
     collection: "work-images",
-    depth: 1,
+    depth: 2,
     sort: "-isFavorite",
   });
 

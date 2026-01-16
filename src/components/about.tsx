@@ -2,10 +2,20 @@
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import Image from "next/image";
-
-export default function AboutSection() {
+import LogoImage from "../../public/logo.png";
+import { useLivePreview } from "@payloadcms/live-preview-react";
+import type { SiteSetting } from "~/payload-types";
+export default function AboutSection({
+  initialData,
+}: {
+  initialData: SiteSetting;
+}) {
   const t = useTranslations("AboutUs");
 
+  const { data } = useLivePreview({
+    initialData,
+    serverURL: process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000",
+  });
   return (
     <section id="about" className="px-6 py-24 md:px-12 lg:py-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
@@ -17,11 +27,11 @@ export default function AboutSection() {
           className="space-y-8"
         >
           <h2 className="text-5xl leading-[1.1] font-bold tracking-tight md:text-6xl">
-            {t("title")}
+            {data?.aboutTitle}
           </h2>
 
           <div className="space-y-6 text-xl leading-relaxed whitespace-pre-line text-slate-700">
-            {t("description")}
+            {data?.aboutDescription}
           </div>
         </motion.div>
 
@@ -35,9 +45,7 @@ export default function AboutSection() {
           {/* Replace with your high-end interior or renovation photo */}
           <div className="absolute inset-0 bg-linear-to-tr from-black/20 to-transparent" />
           <Image
-            width={800}
-            height={800}
-            src="/logo.png"
+            src={LogoImage}
             alt="Luxury Renovation"
             className="h-full w-full object-cover"
           />

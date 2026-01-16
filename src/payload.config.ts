@@ -1,37 +1,22 @@
-import { postgresAdapter } from "@payloadcms/db-postgres"; // Swapped from SQLite
-import { uploadthingStorage } from "@payloadcms/storage-uploadthing"; // Keep your storage
-import sharp from "sharp";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
+import { postgresAdapter } from "@payloadcms/db-postgres";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import path from "path";
 import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
-import { Media } from "./collections/Media";
 
+import { Media } from "./collections/Media";
+import { WorkImages } from "./collections/WorkImages";
 import { Services } from "./collections/Services";
 import { Users } from "./collections/Users";
-import { SiteSettings } from "./globals/SiteSettings";
 import { Categories } from "./collections/Categories";
-import { WorkImages } from "./collections/WorkImages";
-
-// Your custom collections
+import { SiteSettings } from "./globals/SiteSettings";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 export default buildConfig({
-  admin: {
-    user: Users.slug,
-    // LIVE PREVIEW: This is what makes the text editing magic happen
-    livePreview: {
-      breakpoints: [
-        { label: "Mobile", name: "mobile", width: 375, height: 667 },
-        { label: "Desktop", name: "desktop", width: 1440, height: 900 },
-      ],
-    },
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
-  },
-  // MULTI-LANGUAGE SUPPORT
+  globals: [SiteSettings],
   localization: {
     locales: [
       { label: "English", code: "en" },
@@ -39,34 +24,33 @@ export default buildConfig({
       { label: "Dutch", code: "nl" },
     ],
     defaultLocale: "en",
-    fallback: false,
+    fallback: true,
   },
+  admin: {
+    user: Users.slug,
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
+  },
+  collections: [Media, WorkImages, Services, Users, Categories],
+  editor: lexicalEditor({}),
+  secret: process.env.PAYLOAD_SECRET ?? "",
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL ?? "",
     },
-    // Only touch tables prefixed with cms_ to stay safe
-    tablesFilter: ["cms_*", "payload_*"],
-    push: true,
   }),
-  collections: [Users, Media, Categories, Services, WorkImages],
-  globals: [SiteSettings],
   plugins: [
-    uploadthingStorage({
+    vercelBlobStorage({
+      enabled: true,
       collections: {
-        [Media.slug]: true,
         media: {
-          disablePayloadSmartCrops: true,
+          clientUploads: true,
         },
       },
-      options: {
-        token: process.env.UPLOADTHING_TOKEN ?? "",
-        acl: "public-read",
-      },
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
   ],
-  secret: process.env.PAYLOAD_SECRET ?? "",
-  sharp,
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },

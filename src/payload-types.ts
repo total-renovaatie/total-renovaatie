@@ -67,11 +67,11 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
     media: Media;
-    categories: Category;
-    services: Service;
     'work-images': WorkImage;
+    services: Service;
+    users: User;
+    categories: Category;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -79,11 +79,11 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    services: ServicesSelect<false> | ServicesSelect<true>;
     'work-images': WorkImagesSelect<false> | WorkImagesSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -128,6 +128,65 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "work-images".
+ */
+export interface WorkImage {
+  id: number;
+  image: number | Media;
+  category?: (number | null) | Category;
+  aspectRatio?: ('aspect-square' | 'aspect-video' | 'aspect-tall') | null;
+  isFavorite?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  /**
+   * Select the icon to display in the services navigation.
+   */
+  icon?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  category: number | Category;
+  image?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -150,78 +209,6 @@ export interface User {
       }[]
     | null;
   password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  fileKey?: string | null;
-  /**
-   * Legacy field for seeded URLs.
-   */
-  remoteUrl?: string | null;
-  _key?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      _key?: string | null;
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services".
- */
-export interface Service {
-  id: number;
-  title: string;
-  category: number | Category;
-  image?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "work-images".
- */
-export interface WorkImage {
-  id: number;
-  image: number | Media;
-  category?: (number | null) | Category;
-  aspectRatio?: ('aspect-square' | 'aspect-video' | 'aspect-tall') | null;
-  isFavorite?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -248,24 +235,24 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
-      } | null)
-    | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'categories';
-        value: number | Category;
+        relationTo: 'work-images';
+        value: number | WorkImage;
       } | null)
     | ({
         relationTo: 'services';
         value: number | Service;
       } | null)
     | ({
-        relationTo: 'work-images';
-        value: number | WorkImage;
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -311,6 +298,47 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "work-images_select".
+ */
+export interface WorkImagesSelect<T extends boolean = true> {
+  image?: T;
+  category?: T;
+  aspectRatio?: T;
+  isFavorite?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  category?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -334,70 +362,12 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  fileKey?: T;
-  remoteUrl?: T;
-  _key?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              _key?: T;
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services_select".
- */
-export interface ServicesSelect<T extends boolean = true> {
-  title?: T;
-  category?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "work-images_select".
- */
-export interface WorkImagesSelect<T extends boolean = true> {
-  image?: T;
-  category?: T;
-  aspectRatio?: T;
-  isFavorite?: T;
+  icon?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -448,11 +418,36 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface SiteSetting {
   id: number;
   heroTitle: string;
-  heroSubtitle?: string | null;
-  ctaText?: string | null;
-  email?: string | null;
-  phone?: string | null;
+  rotatingServices?:
+    | {
+        text?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  heroImages?:
+    | {
+        image: number | Media;
+        aspect?: ('aspect-[2/3]' | 'aspect-[3/4]' | 'aspect-square') | null;
+        id?: string | null;
+      }[]
+    | null;
+  aboutTitle: string;
+  aboutDescription: string;
+  servicesTitle: string;
+  servicesDescription: string;
+  workTitle: string;
+  workDescription: string;
+  viewAllText?: string | null;
+  contactSectionTitle: string;
+  emailButtonText?: string | null;
+  whatsappButtonText?: string | null;
+  supportEmail?: string | null;
+  /**
+   * Format: 32473200030
+   */
+  whatsappNumber?: string | null;
   address?: string | null;
+  copyrightText?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -462,11 +457,33 @@ export interface SiteSetting {
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
   heroTitle?: T;
-  heroSubtitle?: T;
-  ctaText?: T;
-  email?: T;
-  phone?: T;
+  rotatingServices?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  heroImages?:
+    | T
+    | {
+        image?: T;
+        aspect?: T;
+        id?: T;
+      };
+  aboutTitle?: T;
+  aboutDescription?: T;
+  servicesTitle?: T;
+  servicesDescription?: T;
+  workTitle?: T;
+  workDescription?: T;
+  viewAllText?: T;
+  contactSectionTitle?: T;
+  emailButtonText?: T;
+  whatsappButtonText?: T;
+  supportEmail?: T;
+  whatsappNumber?: T;
   address?: T;
+  copyrightText?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

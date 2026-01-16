@@ -6,7 +6,7 @@ import { Link } from "~/i18n/routing";
 import { Button } from "./ui/button";
 import { Mail } from "lucide-react"; // Using Lucide for the "Turnkey" look
 import { useTranslations } from "next-intl";
-
+import LogoImage from "../../public/logo.png";
 import Whatsapp from "./icons/whatsapp";
 import LanguageSwitcher from "./language-switcher";
 import MobileMenu from "./mobile-menu";
@@ -52,7 +52,7 @@ export default function Header() {
     <header className="bg-background/80 sticky top-0 z-50 flex w-full items-center border-b border-white/10 px-[5vw] backdrop-blur-md">
       <Link href={"/"} className="flex-1">
         <Image
-          src="/logo.png"
+          src={LogoImage}
           alt="Company Logo"
           width={150}
           height={40}
@@ -61,7 +61,7 @@ export default function Header() {
         />
       </Link>
 
-      <nav className="hidden flex-1 items-center justify-center gap-2 md:flex">
+      <nav className="hidden flex-2 items-center justify-center gap-2 md:flex">
         {navItems.map((item, index) => {
           return (
             <Magnetic key={index}>
