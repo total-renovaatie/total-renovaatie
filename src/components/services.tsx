@@ -25,7 +25,7 @@ export default function ServicesSection({
 }) {
   const categorySlugs = data.map((cat) => cat.slug);
   const t = useTranslations("Services");
-
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(categorySlugs[0] ?? "structural");
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -46,7 +46,9 @@ export default function ServicesSection({
     mouseX.set(e.clientX);
     mouseY.set(e.clientY);
   };
-
+  useEffect(() => {
+    setIsImageLoading(true);
+  }, [hoveredImage]);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -105,6 +107,20 @@ export default function ServicesSection({
                 y: "-110%",
               }}
             >
+              {isImageLoading && (
+                <div className="absolute inset-0 bg-slate-200">
+                  <motion.div
+                    className="h-full w-full bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                    initial={{ x: "-100%" }}
+                    animate={{ x: "100%" }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 1.5,
+                      ease: "easeInOut",
+                    }}
+                  />
+                </div>
+              )}
               <Image
                 src={hoveredImage}
                 alt="Service Preview"
