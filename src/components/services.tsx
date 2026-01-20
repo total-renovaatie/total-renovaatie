@@ -238,49 +238,55 @@ export default function ServicesSection({
           </div>
 
           {/* PILL DOCK NAVIGATION */}
-          <div className="mx-auto mt-16 flex w-fit items-center justify-center gap-2 rounded-full border border-black/5 bg-white/80 p-2 shadow-xl backdrop-blur-md">
-            {data.map((category) => {
-              const IconComponent = getIcon(category.icon || "Home");
-              const isActive = activeTab === category.slug;
+          {/* PILL DOCK NAVIGATION */}
+          <div className="mx-auto mt-16 flex justify-center px-4">
+            <div className="flex max-w-full flex-wrap items-center justify-center gap-3 rounded-[2.5rem] border border-black/5 bg-white/80 p-3 shadow-xl backdrop-blur-md md:flex-nowrap md:gap-2 md:rounded-full md:p-2">
+              {data.map((category) => {
+                const IconComponent = getIcon(category.icon || "Home");
+                const isActive = activeTab === category.slug;
 
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => {
-                    if (isMobile) {
-                      // On mobile, just switch the content immediately
-                      setActiveTab(category.slug);
-                    } else {
-                      // On desktop, keep the smooth scroll logic
-                      const index = categorySlugs.indexOf(category.slug);
-                      const scrollPos = index * window.innerHeight;
-                      window.scrollTo({
-                        top: containerRef.current!.offsetTop + scrollPos,
-                        behavior: "smooth",
-                      });
-                    }
-                  }}
-                  className="relative flex items-center justify-center rounded-full p-4 transition-all"
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeServiceTab"
-                      className="bg-primary absolute inset-0 rounded-full"
-                      transition={{
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 0.6,
-                      }}
-                    />
-                  )}
-                  <div
-                    className={`relative z-10 transition-colors duration-300 ${isActive ? "text-white" : "text-slate-400"}`}
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      if (isMobile) {
+                        setActiveTab(category.slug);
+                      } else {
+                        const index = categorySlugs.indexOf(category.slug);
+                        const scrollPos = index * window.innerHeight;
+                        window.scrollTo({
+                          top: containerRef.current!.offsetTop + scrollPos,
+                          behavior: "smooth",
+                        });
+                      }
+                    }}
+                    // 1. Remove flex-1.
+                    // 2. Use fixed dimensions so they wrap as individual circles.
+                    className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-all md:h-14 md:w-14"
+                    aria-label={category.name}
                   >
-                    <IconComponent size={22} />
-                  </div>
-                </button>
-              );
-            })}
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeServiceTab"
+                        className="bg-primary absolute inset-0 rounded-full"
+                        transition={{
+                          type: "spring",
+                          bounce: 0.2,
+                          duration: 0.6,
+                        }}
+                      />
+                    )}
+                    <div
+                      className={`relative z-10 transition-colors duration-300 ${
+                        isActive ? "text-white" : "text-slate-400"
+                      }`}
+                    >
+                      <IconComponent className="h-5 w-5 md:h-[22px] md:w-[22px]" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
       </div>
