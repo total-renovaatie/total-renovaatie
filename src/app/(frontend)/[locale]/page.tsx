@@ -9,6 +9,7 @@ import Home from "~/components/home";
 import Services from "~/components/services";
 import Work from "~/components/work";
 import { getCategoriesWithServices, getAllWorkImages } from "~/lib/data";
+import ContactMap from "~/components/contact-map";
 export default async function HomePage() {
   const locale = await getLocale(); // This gets 'en', 'fr', or 'nl'
   const payload = await getPayload({ config: configPromise });
@@ -38,6 +39,7 @@ export default async function HomePage() {
         workImages={images}
         settings={siteSettings}
       />
+      <ContactMap />
       <Contact locale={locale} settings={siteSettings} />
       <FloatingActions />
     </>
