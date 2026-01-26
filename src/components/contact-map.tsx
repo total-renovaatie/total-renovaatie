@@ -24,7 +24,7 @@ export default function ContactMap() {
     <section className="mx-6 py-12 md:mx-12">
       <div className="">
         <div className="h-112.5 w-full">
-          <Map {...mapData} />
+          <Map {...mapData} />outdoor
         </div>
       </div>
     </section>
