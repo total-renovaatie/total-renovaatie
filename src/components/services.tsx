@@ -22,7 +22,22 @@ export default function ServicesSection({
   locale: string;
   settings: SiteSetting;
 }) {
-  const categorySlugs = data.map((cat) => cat.slug);
+  const preferredOrder = [
+    "demolition",
+    "electricity",
+    "joinery",
+    "interior",
+    "finishing",
+    "sanitary",
+  ];
+  console.log("this is the data to figure out the slugs", data);
+  const sortedData = [...data].sort((a, b) => {
+    return (
+      preferredOrder.indexOf(a.slug.trim()) -
+      preferredOrder.indexOf(b.slug.trim())
+    );
+  });
+  const categorySlugs = sortedData.map((cat) => cat.slug);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(categorySlugs[0] ?? "structural");
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
@@ -68,8 +83,8 @@ export default function ServicesSection({
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (isMobile) return;
-    const index = Math.floor(latest * data.length);
-    const safeIndex = Math.min(index, data.length - 1);
+    const index = Math.floor(latest * sortedData.length);
+    const safeIndex = Math.min(index, sortedData.length - 1);
     const nextCategory = categorySlugs[safeIndex];
 
     if (nextCategory && nextCategory !== activeTab) {
@@ -85,7 +100,7 @@ export default function ServicesSection({
         style={{
           // If mobile, use auto height.
           // If desktop, multiply number of categories by 100vh
-          minHeight: isMobile ? "auto" : `${data.length * 100}vh`,
+          minHeight: isMobile ? "auto" : `${sortedData.length * 100}vh`,
         }}
       >
         {/* FLOATING IMAGE (Follows Spring Values) */}
@@ -149,7 +164,7 @@ export default function ServicesSection({
           <div className="flex flex-1 flex-col items-center justify-center text-center">
             <AnimatePresence mode="wait">
               {(() => {
-                const currentCategory = data.find(
+                const currentCategory = sortedData.find(
                   (cat) => cat.slug === activeTab,
                 );
                 if (!currentCategory) return null;
@@ -238,7 +253,7 @@ export default function ServicesSection({
           {/* PILL DOCK NAVIGATION */}
           <div className="mx-auto mt-16 flex justify-center px-4">
             <div className="flex max-w-full flex-wrap items-center justify-center gap-3 rounded-[2.5rem] border border-black/5 bg-white/80 p-3 shadow-xl backdrop-blur-md md:flex-nowrap md:gap-2 md:rounded-full md:p-2">
-              {data.map((category) => {
+              {sortedData.map((category) => {
                 const IconComponent = getIcon(category.icon || "Home");
                 const isActive = activeTab === category.slug;
 
