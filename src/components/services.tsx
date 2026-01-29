@@ -24,11 +24,11 @@ export default function ServicesSection({
 }) {
   const preferredOrder = [
     "demolition",
+    "interior",
+    "sanitary",
     "electricity",
     "joinery",
-    "interior",
     "finishing",
-    "sanitary",
   ];
   console.log("this is the data to figure out the slugs", data);
   const sortedData = [...data].sort((a, b) => {
