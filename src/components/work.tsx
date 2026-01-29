@@ -8,16 +8,17 @@ import { motion } from "framer-motion";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import Slideshow from "yet-another-react-lightbox/plugins/slideshow";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails"; // 1. Import Thumbnails
 
 // Styles
 import "react-photo-album/masonry.css";
 import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/thumbnails.css"; // 2. Import Thumbnail CSS
 
 import NextJsImage from "./next-image";
 import type { Category, WorkImage, Media } from "~/payload-types";
 import type { SiteSetting } from "~/payload-types";
 
-// Define the shape for the gallery
 interface GalleryPhoto {
   src: string;
   width: number;
@@ -41,53 +42,60 @@ export default function PhotoGallery({
   const [index, setIndex] = useState(-1);
   const [filter, setFilter] = useState(categories[0]?.slug);
 
-  // 1. Transform Payload data to Gallery format
+  // 3. New State: Decide if Lightbox shows "filtered" list or "all" list
+  const [lightboxMode, setLightboxMode] = useState<"filtered" | "all">(
+    "filtered",
+  );
+
+  // --- DATA PREPARATION ---
+
+  // A. Format all photos from Payload
   const allPhotos = useMemo(() => {
-    const mapped = workImages.map((img): GalleryPhoto => {
+    return workImages.map((img): GalleryPhoto => {
       const media = img.image as Media;
-
-      // Access real dimensions from the Media object
-      const width = media?.width ?? 1080;
-      const height = media?.height ?? 1080;
-      const category = img.category as Category;
-      const slug =
-        typeof category === "object" ? category?.slug : "NO_SLUG_FOUND";
-
       return {
         src: media?.url ?? "",
-        width,
-        height,
-        // Safely access the slug for filtering
-        categorySlug: typeof category === "object" ? category.slug : "",
+        width: media?.width ?? 1080,
+        height: media?.height ?? 1080,
+        categorySlug: typeof img.category === "object" ? img.category.slug : "",
         isFavorite: !!img.isFavorite,
         alt: media?.alt ?? "Project Gallery Image",
       };
     });
-    return mapped;
   }, [workImages]);
 
-  // 2. Filter logic (Same as Services component)
-  const filteredPhotos = useMemo(
-    () => allPhotos.filter((p) => p.categorySlug === filter),
-    [allPhotos, filter],
-  );
+  // B. "All Photos" List (Sorted: Favorites first, then others)
+  // This is what we show when clicking "View All"
+  const allPhotosSorted = useMemo(() => {
+    const favorites = allPhotos.filter((p) => p.isFavorite);
+    const others = allPhotos.filter((p) => !p.isFavorite);
+    return [...favorites, ...others];
+  }, [allPhotos]);
 
-  // 3. Display only favorites in the grid, or a subset
+  // C. "Category" List (Filtered by Tab + Sorted)
+  // This is what we show in the Grid and when clicking a Grid image
+  const categoryPhotos = useMemo(() => {
+    // Filter
+    const filtered = allPhotos.filter((p) => p.categorySlug === filter);
+    // Sort
+    const favorites = filtered.filter((p) => p.isFavorite);
+    const others = filtered.filter((p) => !p.isFavorite);
+    return [...favorites, ...others];
+  }, [allPhotos, filter]);
+
+  // D. Grid Display Items (Limit to 12)
   const gridPhotos = useMemo(() => {
-    if (filteredPhotos.length === 0) return [];
+    return categoryPhotos.slice(0, 12);
+  }, [categoryPhotos]);
 
-    const favorites = filteredPhotos.filter((p) => p.isFavorite);
-    const nonFavorites = filteredPhotos.filter((p) => !p.isFavorite);
-
-    const combined = [...favorites, ...nonFavorites];
-
-    return combined.slice(0, 12); // Use 12 because it's divisible by 2, 3, and 4 (perfect for masonry)
-  }, [filteredPhotos]);
+  // E. Determine which list to feed the Lightbox
+  const lightboxSlides =
+    lightboxMode === "all" ? allPhotosSorted : categoryPhotos;
 
   return (
     <section id="work" className="w-full px-6 py-24 md:px-12">
       <div className="mx-auto max-w-7xl">
-        {/* HEADER SECTION - Matches Services Style */}
+        {/* HEADER */}
         <div className="mb-16 flex flex-col items-end text-right">
           <h2 className="text-6xl font-bold tracking-tight text-slate-900 md:text-8xl">
             {settings.workTitle}
@@ -97,15 +105,14 @@ export default function PhotoGallery({
           </p>
         </div>
 
-        {/* NAVIGATION DOCK - Matches Services Navigation */}
+        {/* NAVIGATION */}
         <div className="mb-12 flex flex-col gap-8">
-          {/* Header Section: View All and Category Scroll */}
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            {/* 1. View All Button - Now clearly the primary action or starting point */}
+            {/* VIEW ALL BUTTON */}
             <button
               onClick={() => {
-                setIndex(0);
-                setFilter("all"); // Assuming 'all' resets your filter
+                setLightboxMode("all"); // Switch Lightbox to "Show Everything" mode
+                setIndex(0); // Open Lightbox immediately
               }}
               className="group flex w-fit items-center gap-2 rounded-full border border-slate-300 px-8 py-3 text-sm font-medium transition-all hover:bg-black hover:text-white"
             >
@@ -115,7 +122,7 @@ export default function PhotoGallery({
               </span>
             </button>
 
-            {/* 2. Scrollable Categories Container */}
+            {/* CATEGORY TABS */}
             <div className="relative max-w-full">
               <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-2 transition-all md:pb-0">
                 <div className="flex gap-2 rounded-full border border-black/5 bg-slate-50/50 p-1.5 backdrop-blur-sm">
@@ -145,16 +152,14 @@ export default function PhotoGallery({
                   ))}
                 </div>
               </div>
-
-              {/* Mobile Fade Effect: Hints that there is more content to scroll */}
-              <div className="pointer-events-none absolute top-0 right-0 h-full w-12 bg-gradient-to-l from-white/50 to-transparent md:hidden" />
             </div>
           </div>
         </div>
 
-        {/* MASONRY ALBUM */}
+        {/* GRID (Always shows Category Favorites) */}
         <motion.div
           layout
+          key={filter}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -162,7 +167,10 @@ export default function PhotoGallery({
           <MasonryPhotoAlbum
             photos={gridPhotos}
             render={{ image: NextJsImage }}
-            onClick={({ index }) => setIndex(index)}
+            onClick={({ index }) => {
+              setLightboxMode("filtered"); // Switch Lightbox to "Category Only" mode
+              setIndex(index);
+            }}
             columns={(w) => (w < 640 ? 2 : w < 1024 ? 3 : 4)}
             spacing={20}
           />
@@ -170,11 +178,12 @@ export default function PhotoGallery({
 
         {/* LIGHTBOX */}
         <Lightbox
-          slides={filteredPhotos}
+          slides={lightboxSlides}
           open={index >= 0}
           index={index}
           close={() => setIndex(-1)}
-          plugins={[Fullscreen, Slideshow, Zoom]}
+          // 4. Added Thumbnails to plugins
+          plugins={[Fullscreen, Slideshow, Zoom, Thumbnails]}
         />
       </div>
     </section>
